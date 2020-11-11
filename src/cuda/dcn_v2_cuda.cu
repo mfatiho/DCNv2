@@ -104,7 +104,7 @@ dcn_v2_cuda_forward(const at::Tensor &input,
     const int block = 128;
     const int grid = (batch + block - 1) / block;
 
-    createBatchGemmBuffer<<<grid, block, 0, THCState_getCurrentStream(state)>>>(
+    createBatchGemmBuffer<<<grid, block, 0, c10::cuda::getCurrentCUDAStream()>>>(
         input_b, output_b,
         columns_b, ones_b,
         weight_b, bias_b,
@@ -276,7 +276,7 @@ std::vector<at::Tensor> dcn_v2_cuda_backward(const at::Tensor &input,
                          columns.data<scalar_t>(), n);
 
         // gradient w.r.t. input coordinate data
-        modulated_deformable_col2im_coord_cuda(THCState_getCurrentStream(state),
+        modulated_deformable_col2im_coord_cuda(c10::cuda::getCurrentCUDAStream(),
                                                columns.data<scalar_t>(),
                                                input_n.data<scalar_t>(),
                                                offset_n.data<scalar_t>(),
